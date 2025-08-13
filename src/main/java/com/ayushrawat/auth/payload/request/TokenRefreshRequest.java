@@ -1,4 +1,4 @@
-package com.ayushrawat.auth.dto;
+package com.ayushrawat.auth.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LoginRequest {
+public class TokenRefreshRequest {
 
-  private String username;
-  private String password;
+  private String refreshToken;
 
 }

@@ -1,6 +1,6 @@
 package com.ayushrawat.auth.mapper;
 
-import com.ayushrawat.auth.dto.UserDTO;
+import com.ayushrawat.auth.payload.request.UserDTO;
 import com.ayushrawat.auth.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

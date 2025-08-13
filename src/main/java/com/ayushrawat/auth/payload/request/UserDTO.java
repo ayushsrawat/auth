@@ -1,4 +1,4 @@
-package com.ayushrawat.auth.dto;
+package com.ayushrawat.auth.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

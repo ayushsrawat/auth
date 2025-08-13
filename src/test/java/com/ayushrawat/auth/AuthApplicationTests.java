@@ -1,7 +1,7 @@
 package com.ayushrawat.auth;
 
-import com.ayushrawat.auth.dto.LoginRequest;
-import com.ayushrawat.auth.dto.UserDTO;
+import com.ayushrawat.auth.payload.request.LoginRequest;
+import com.ayushrawat.auth.payload.request.UserDTO;
 import com.ayushrawat.auth.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -103,7 +103,7 @@ class AuthApplicationTests {
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(loginRequest)))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.token").isString())
+      .andExpect(jsonPath("$.accessToken").isString())
       .andExpect(jsonPath("$.username").value("loginuser"));
   }
 
@@ -141,7 +141,7 @@ class AuthApplicationTests {
 
     String responseBody = loginResult.getResponse().getContentAsString();
     JsonNode responseJson = objectMapper.readTree(responseBody);
-    String token = responseJson.get("token").asText();
+    String token = responseJson.get("accessToken").asText();
 
     logger.info("Created token: {}", token);
 
