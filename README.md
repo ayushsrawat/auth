@@ -20,6 +20,7 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 - **Spring Security 6**
 - **Spring Data JPA**
 - **PostgreSQL**: Database for storing user information.
+- **RabbitMQ**: Publishing user related events to the exchange. 
 - **JWT (Java JWT - jjwt)**: For token generation and validation.
 - **Lombok**: To reduce boilerplate code.
 - **MapStruct**: For efficient DTO-to-Entity mapping.
@@ -29,6 +30,7 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 
 - JDK 21 or later
 - A running PostgreSQL instance
+- docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
 
 ## Setup and Installation
 

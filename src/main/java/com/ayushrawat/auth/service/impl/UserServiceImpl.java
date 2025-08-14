@@ -1,5 +1,7 @@
 package com.ayushrawat.auth.service.impl;
 
+import com.ayushrawat.auth.config.RabbitMQConfig;
+import com.ayushrawat.auth.payload.event.UserRegisteredEvent;
 import com.ayushrawat.auth.payload.request.UserDTO;
 import com.ayushrawat.auth.entity.User;
 import com.ayushrawat.auth.entity.UserRole;
@@ -9,6 +11,8 @@ import com.ayushrawat.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
+  private final RabbitTemplate rabbitTemplate;
 
   public User registerUser(UserDTO userDTO) {
     Assert.isTrue(userRepository.findByUsername(userDTO.getUsername()).isEmpty(), "Username already taken.");
@@ -37,7 +42,16 @@ public class UserServiceImpl implements UserService {
       user.setDeleted(false);
 
       logger.info("Saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.getRole()));
-      return userRepository.save(user);
+      User userWithId = userRepository.save(user);
+      try {
+        String routingKey = "user.registered";
+        logger.info("Sending event [{}] to RabbitMQ", routingKey);
+        UserRegisteredEvent event = new UserRegisteredEvent(userWithId.getId(), userWithId.getUsername(), userWithId.getEmail());
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, routingKey, event);
+      } catch (AmqpException ae) {
+        logger.error("Error publishing user register event");
+      }
+      return userWithId;
     } catch (DataIntegrityViolationException e) {
       throw new IllegalArgumentException("Error registering the user. Please ensure all the details are valid.");
     }
