@@ -32,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public LoginResponse login(LoginRequest request) {
+    logger.info("Logging request from user [{}]", request.getUsername());
     User user = userRepository.findByUsername(request.getUsername())
       .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
     if (passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
@@ -47,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public TokenRefreshResponse refreshToken(TokenRefreshRequest tokenRefreshRequest) {
+    logger.info("Refresh token request for token [{}]", tokenRefreshRequest.getRefreshToken());
     return refreshTokenService.findByToken(tokenRefreshRequest.getRefreshToken())
       .map(refreshTokenService::verifyExpiration)
       .map(RefreshToken::getUser)

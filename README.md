@@ -10,6 +10,8 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 - **Password Security**: Passwords are never stored in plaintext; they are securely hashed using BCrypt.
 - **Protected Endpoints**: Easily protect API endpoints, allowing access only to authenticated users.
 - **Role-Based Access**: Foundation for role-based access control is included in the JWT claims.
+- **Token Refresh**: Refresh JWTs using a refresh token without exposing user credentials.
+- **Logout**: Securely log out users by invalidating their refresh tokens.
 
 ## Dependencies
 
@@ -82,12 +84,7 @@ Registers a new user.
 {
   "username": "newuser",
   "password": "password123",
-  "firstName": "Test",
-  "lastName": "User",
-  "dob": "1990-01-01",
-  "phone": "1234567890",
-  "email": "newuser@example.com",
-  "address": "123 Main St"
+  "email": "newuser@example.com"
 }
 ```
 
@@ -96,15 +93,14 @@ Registers a new user.
 {
     "id": 1,
     "username": "newuser",
-    "firstName": "Test",
-    "lastName": "User",
-    // ... other fields
+    "password": "password123",
+    "email": "newuser@example.com"
 }
 ```
 
 #### `POST /api/v1/auth/login`
 
-Authenticates a user and returns a JWT.
+Authenticates a user and returns a JWT and a refresh token.
 
 **Request Body:**
 ```json
@@ -118,9 +114,32 @@ Authenticates a user and returns a JWT.
 ```json
 {
     "username": "newuser",
-    "token": "ey......"
+    "accessToken": "ey......",
+    "refreshToken": "..."
 }
 ```
+
+#### `POST /api/v1/auth/refreshToken`
+
+Refreshes an expired JWT using a valid refresh token.
+
+**Request Body:**
+```json
+{
+  "refreshToken": "..."
+}
+```
+
+**Success Response (200 OK):**
+```json
+{   
+    "username": "username"
+    "accessToken": "ey......",
+    "refreshToken": "..."
+}
+```
+
+#### `POST /api/v1/auth/logout`
 
 ## Run Tests
 ```bash

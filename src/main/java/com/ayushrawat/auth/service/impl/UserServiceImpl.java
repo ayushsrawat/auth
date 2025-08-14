@@ -34,8 +34,9 @@ public class UserServiceImpl implements UserService {
       user.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));
       user.setCreatedAt(LocalDateTime.now());
       user.setRole(UserRole.ROLE_USER.getBit());
+      user.setDeleted(false);
 
-      logger.info("saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.getRole()));
+      logger.info("Saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.getRole()));
       return userRepository.save(user);
     } catch (DataIntegrityViolationException e) {
       throw new IllegalArgumentException("Error registering the user. Please ensure all the details are valid.");
