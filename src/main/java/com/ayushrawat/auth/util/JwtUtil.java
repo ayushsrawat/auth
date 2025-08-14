@@ -17,12 +17,15 @@ public class JwtUtil {
   @Value("${jwt.secret.key}")
   private String JWT_SECRET_KEY;
 
+  @Value("${jwt.access.duration.ms}")
+  private Long JWT_ACCESS_TOKEN_DURATION_MS;
+
   public String generateToken(User user) {
     return Jwts.builder()
       .subject(user.getUsername())
       .claim("role", user.getRole())
       .issuedAt(new Date())
-      .expiration(new Date(System.currentTimeMillis() + 86400000)) //24hrs
+      .expiration(new Date(System.currentTimeMillis() + JWT_ACCESS_TOKEN_DURATION_MS))
       .signWith(getSigningKey())
       .compact();
   }
@@ -43,6 +46,7 @@ public class JwtUtil {
     return extractClaims(token).getSubject();
   }
 
+  @SuppressWarnings("unused")
   public Integer extractUserRole(String token) {
     return extractClaims(token).get("role", Integer.class);
   }

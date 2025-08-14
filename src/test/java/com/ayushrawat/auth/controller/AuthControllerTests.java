@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Date;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -47,7 +46,7 @@ public class AuthControllerTests {
 
     @BeforeEach
     void setUp() {
-        UserDTO userDTO = new UserDTO("refresh_tester", "User", "Login", "password", new Date(), "222", "login@example.com", "addr");
+        UserDTO userDTO = new UserDTO("refresh_tester", "login@example.com", "password");
         userService.registerUser(userDTO);
 
         LoginRequest loginRequest = new LoginRequest("refresh_tester", "password");

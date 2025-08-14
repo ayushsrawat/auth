@@ -57,11 +57,11 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public Boolean logoutUser() {
+  public void logoutUser() {
     var principal = (SecureUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     User user = userRepository.findByUsername(principal.getUsername()).orElseThrow();
     int delta = refreshTokenService.deleteByUser(user);
-    return delta > 0;
+    logger.info("logging [{}] out, deleting refresh tokens [{}] size", user.getUsername(), delta);
   }
 
 }

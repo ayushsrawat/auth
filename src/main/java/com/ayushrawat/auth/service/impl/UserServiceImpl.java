@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
   public User registerUser(UserDTO userDTO) {
     Assert.isTrue(userRepository.findByUsername(userDTO.getUsername()).isEmpty(), "Username already taken.");
+    Assert.isTrue(userRepository.findByEmail(userDTO.getEmail()).isEmpty(), "Email already registered");
     try {
       User user = userMapper.toEntity(userDTO);
       user.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));

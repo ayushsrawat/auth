@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,17 +51,7 @@ class AuthApplicationTests {
 
   @Test
   void shouldRegisterUserSuccessfully() throws Exception {
-    UserDTO userDTO = new UserDTO(
-      "testuser",
-      "password123",
-      "Test",
-      "User",
-      new Date(),
-      "1234567890",
-      "test@example.com",
-      "123 Test St"
-    );
-
+    UserDTO userDTO = new UserDTO("testuser", "test@example.com", "password123");
     mockMvc.perform(post("/api/v1/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(userDTO)))
@@ -76,7 +64,7 @@ class AuthApplicationTests {
   @Test
   void shouldFailRegistrationWhenUsernameExists() throws Exception {
     // Arrange: Create a user first
-    UserDTO existingUser = new UserDTO("existinguser", "password123", "Existing", "User", new Date(), "111", "exist@example.com", "addr");
+    UserDTO existingUser = new UserDTO("existinguser", "exist@example.com", "password123");
     mockMvc.perform(post("/api/v1/auth/register")
       .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(existingUser)));
@@ -91,7 +79,7 @@ class AuthApplicationTests {
   @Test
   void shouldLoginSuccessfullyWithCorrectCredentials() throws Exception {
     // Arrange: Register a user first
-    UserDTO userDTO = new UserDTO("loginuser", "User", "Login", "password123", new Date(), "222", "login@example.com", "addr");
+    UserDTO userDTO = new UserDTO("loginuser", "login@example.com", "password123");
     mockMvc.perform(post("/api/v1/auth/register")
       .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(userDTO)));
@@ -110,7 +98,7 @@ class AuthApplicationTests {
   @Test
   void shouldFailLoginWithIncorrectPassword() throws Exception {
     // Arrange: Register a user first
-    UserDTO userDTO = new UserDTO("loginuser2", "password123", "Login", "User", new Date(), "333", "login2@example.com", "addr");
+    UserDTO userDTO = new UserDTO("loginuser2", "login@example.com", "password123");
     mockMvc.perform(post("/api/v1/auth/register")
       .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(userDTO)));
@@ -127,7 +115,7 @@ class AuthApplicationTests {
   @Test
   void shouldAccessProtectedEndpointWithValidToken() throws Exception {
     // Arrange: Register and login to get a token
-    UserDTO userDTO = new UserDTO("authtest", "test", "Auth", "password123", new Date(), "444", "auth@test.com", "addr");
+    UserDTO userDTO = new UserDTO("authtest", "login@example.com", "password123");
     mockMvc.perform(post("/api/v1/auth/register")
       .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(userDTO)));
