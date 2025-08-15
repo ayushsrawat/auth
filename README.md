@@ -30,7 +30,7 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 
 - JDK 21 or later
 - A running PostgreSQL instance
-- docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+- A running RabbitMQ instance (docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management)
 
 ## Setup and Installation
 

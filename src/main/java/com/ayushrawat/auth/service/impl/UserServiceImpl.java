@@ -1,18 +1,17 @@
 package com.ayushrawat.auth.service.impl;
 
-import com.ayushrawat.auth.config.RabbitMQConfig;
-import com.ayushrawat.auth.payload.event.UserRegisteredEvent;
-import com.ayushrawat.auth.payload.request.UserDTO;
 import com.ayushrawat.auth.entity.User;
 import com.ayushrawat.auth.entity.UserRole;
 import com.ayushrawat.auth.mapper.UserMapper;
+import com.ayushrawat.auth.payload.event.UserRegisteredEvent;
+import com.ayushrawat.auth.payload.request.UserDTO;
 import com.ayushrawat.auth.repository.UserRepository;
 import com.ayushrawat.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,12 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
 
   private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+  @Value("${auth.user.rmq.exchange}")
+  private String userExchange;
+
+  @Value("${auth.user.rmq.keys.registered}")
+  private String userRegisteredRegisterKey;
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
@@ -44,12 +49,11 @@ public class UserServiceImpl implements UserService {
       logger.info("Saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.getRole()));
       User userWithId = userRepository.save(user);
       try {
-        String routingKey = "user.registered";
-        logger.info("Sending event [{}] to RabbitMQ", routingKey);
+        logger.info("Sending event [{}] to RabbitMQ", userRegisteredRegisterKey);
         UserRegisteredEvent event = new UserRegisteredEvent(userWithId.getId(), userWithId.getUsername(), userWithId.getEmail());
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, routingKey, event);
-      } catch (AmqpException ae) {
-        logger.error("Error publishing user register event");
+        rabbitTemplate.convertAndSend(userExchange, userRegisteredRegisterKey, event);
+      } catch (Exception ae) {
+        logger.error("Error publishing user register event: routing key [{}] \n {} ", userRegisteredRegisterKey, ae.getMessage());
       }
       return userWithId;
     } catch (DataIntegrityViolationException e) {
