@@ -12,5 +12,6 @@ public class UserRegisteredEvent {
     private Integer id;
     private String username;
     private String email;
+    private Integer userRole;
 
 }

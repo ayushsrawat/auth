@@ -49,8 +49,8 @@ public class UserServiceImpl implements UserService {
       logger.info("Saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.getRole()));
       User userWithId = userRepository.save(user);
       try {
-        logger.info("Sending event [{}] to RabbitMQ", userRegisteredRegisterKey);
-        UserRegisteredEvent event = new UserRegisteredEvent(userWithId.getId(), userWithId.getUsername(), userWithId.getEmail());
+        logger.info("Sending event {}:[{}] to RabbitMQ",userWithId.getUsername(),  userRegisteredRegisterKey);
+        UserRegisteredEvent event = new UserRegisteredEvent(userWithId.getId(), userWithId.getUsername(), userWithId.getEmail(), userWithId.getRole());
         rabbitTemplate.convertAndSend(userExchange, userRegisteredRegisterKey, event);
       } catch (Exception ae) {
         logger.error("Error publishing user register event: routing key [{}] \n {} ", userRegisteredRegisterKey, ae.getMessage());
