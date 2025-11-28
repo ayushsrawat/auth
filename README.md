@@ -15,8 +15,8 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 
 ## Dependencies
 
-- **Java 21**
-- **Spring Boot 3**
+- **Java 25**
+- **Spring Boot 4**
 - **Spring Security 6**
 - **Spring Data JPA**
 - **PostgreSQL**: Database for storing user information.
@@ -28,7 +28,7 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 
 ## Prerequisites
 
-- JDK 21 or later
+- JDK 25 or later
 - A running PostgreSQL instance
 - A running RabbitMQ instance (docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management)
 

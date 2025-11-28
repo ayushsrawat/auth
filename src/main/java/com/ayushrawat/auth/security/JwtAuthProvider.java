@@ -4,6 +4,7 @@ import com.ayushrawat.auth.entity.User;
 import com.ayushrawat.auth.repository.UserRepository;
 import com.ayushrawat.auth.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +21,7 @@ public class JwtAuthProvider implements AuthenticationProvider {
   private final JwtUtil jwtUtil;
 
   @Override
-  public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+  public Authentication authenticate(@NonNull Authentication authentication) throws AuthenticationException {
     String token = ((JwtAuthToken) authentication).getToken();
     final String username = jwtUtil.extractUsername(token);
     if (username == null) {
@@ -41,7 +42,7 @@ public class JwtAuthProvider implements AuthenticationProvider {
   }
 
   @Override
-  public boolean supports(Class<?> authentication) {
+  public boolean supports(@NonNull Class<?> authentication) {
     return JwtAuthToken.class.isAssignableFrom(authentication);
   }
 }
