@@ -30,7 +30,8 @@ This is a standalone authentication microservice built with Spring Boot. It prov
 
 - JDK 25 or later
 - A running PostgreSQL instance
-- A running RabbitMQ instance (docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management)
+- A running RabbitMQ instance:
+  - docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
 
 ## Setup and Installation
 
@@ -135,7 +136,7 @@ Refreshes an expired JWT using a valid refresh token.
 **Success Response (200 OK):**
 ```json
 {   
-    "username": "username"
+    "username": "username",
     "accessToken": "ey......",
     "refreshToken": "..."
 }
