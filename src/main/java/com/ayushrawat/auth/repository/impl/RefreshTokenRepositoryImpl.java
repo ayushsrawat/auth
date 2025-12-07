@@ -5,7 +5,6 @@ import com.ayushrawat.auth.jooq.tables.records.RefreshTokensRecord;
 import com.ayushrawat.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
