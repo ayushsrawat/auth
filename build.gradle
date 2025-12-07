@@ -1,52 +1,101 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '4.0.0'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '4.0.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.jooq.jooq-codegen-gradle' version '3.19.28'
 }
 
 group = 'com.ayushrawat'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+ext {
+    jooqVersion = '3.19.28'
+    jwtVersion = '0.13.0'
+    jooqUrl = project.findProperty("jooq.jdbc.url")
+    jooqUser = project.findProperty("jooq.jdbc.user")
+    jooqPassword = project.findProperty("jooq.jdbc.password")
+}
+
+jooq {
+    configuration {
+        jdbc {
+            driver = 'org.postgresql.Driver'
+            url = "${jooqUrl}"
+            user = "${jooqUser}"
+            password = "${jooqPassword}"
+        }
+        generator {
+            name = 'org.jooq.codegen.JavaGenerator'
+            database {
+                name = 'org.jooq.meta.postgres.PostgresDatabase'
+                inputSchema = 'public'
+                includes = '.*'
+                excludes = ''
+            }
+            target {
+                packageName = 'com.ayushrawat.auth.jooq'
+                directory = 'src/main/java'
+            }
+            generate {
+                pojos = true
+                fluentSetters = true
+            }
+        }
+    }
+    // https://www.jooq.org/xsd/jooq-codegen-3.19.28.xsd
+}
+
+if (!System.getenv("CI")) {
+    tasks.named('compileJava') {
+        dependsOn tasks.named('jooqCodegen')
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    implementation "org.jooq:jooq:${jooqVersion}"
+    implementation "org.jooq:jooq-meta:${jooqVersion}"
+    implementation "org.jooq:jooq-codegen:${jooqVersion}"
 
-	runtimeOnly 'org.postgresql:postgresql'
+    implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jwtVersion}"
 
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.mapstruct:mapstruct:1.6.3'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    runtimeOnly 'org.postgresql:postgresql'
+    jooqCodegen 'org.postgresql:postgresql'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
