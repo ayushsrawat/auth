@@ -57,8 +57,10 @@ jooq {
     // https://www.jooq.org/xsd/jooq-codegen-3.19.28.xsd
 }
 
-tasks.named('compileJava') {
-    dependsOn tasks.named('jooqCodegen')
+if (!System.getenv("CI")) {
+    tasks.named('compileJava') {
+        dependsOn tasks.named('jooqCodegen')
+    }
 }
 
 repositories {
