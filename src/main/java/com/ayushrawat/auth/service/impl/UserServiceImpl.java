@@ -41,16 +41,17 @@ public class UserServiceImpl implements UserService {
     Assert.isTrue(userRepository.findByEmail(userDTO.getEmail()).isEmpty(), "Email already registered");
     try {
       User user = userMapper.toEntity(userDTO);
-      user.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));
-      user.setCreatedAt(LocalDateTime.now());
-      user.setRole(UserRole.ROLE_USER.getBit());
-      user.setDeleted(false);
+      user.passwordHash(passwordEncoder.encode(userDTO.getPassword()));
+      user.createdAt(LocalDateTime.now());
+      user.role(UserRole.ROLE_USER.getBit());
+      user.deleted(false);
 
-      logger.info("Saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.getRole()));
+      logger.info("Saving user : {} with roles {}", userDTO.getUsername(), UserRole.fromBitmask(user.role()));
       User userWithId = userRepository.save(user);
+
       try {
-        logger.info("Sending event {}:[{}] to RabbitMQ",userWithId.getUsername(),  userRegisteredRegisterKey);
-        UserRegisteredEvent event = new UserRegisteredEvent(userWithId.getId(), userWithId.getUsername(), userWithId.getEmail(), userWithId.getRole());
+        logger.info("Sending event {}:[{}] to RabbitMQ",userWithId.username(),  userRegisteredRegisterKey);
+        UserRegisteredEvent event = new UserRegisteredEvent(userWithId.id(), userWithId.username(), userWithId.email(), userWithId.role());
         rabbitTemplate.convertAndSend(userExchange, userRegisteredRegisterKey, event);
       } catch (Exception ae) {
         logger.error("Error publishing user register event: routing key [{}] \n {} ", userRegisteredRegisterKey, ae.getMessage());

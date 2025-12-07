@@ -1,0 +1,37 @@
+### REGISTER
+POST http://localhost:8181/api/v1/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "test123",
+  "email" : "test1234@test.com",
+  "password" :  "test1234"
+}
+
+### LOGIN
+POST http://localhost:8181/api/v1/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "test123",
+  "password": "test1234"
+}
+
+### REFRESH TOKEN
+POST http://localhost:8181/api/v1/auth/refreshToken
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzIiwicm9sZSI6NCwiaWF0IjoxNzY1MTA1ODAwLCJleHAiOjE3NjUxMDU4NjB9.BNyFVwKdLoCZK3NRNgnDpZcJ-65WsSlN_C_z2I00yf0
+
+{
+  "refreshToken" : "fd7f3ece-4061-447c-8a7b-c074d0d9d635"
+}
+
+
+### LOGOUT
+POST http://localhost:8181/api/v1/auth/logout
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzIiwicm9sZSI6NCwiaWF0IjoxNzY1MTA1ODE5LCJleHAiOjE3NjUxMDU4Nzl9.nK9_lsNNDn7Da3NpH5DkLMB0-oNuNhUsEzWC41H6sUQ

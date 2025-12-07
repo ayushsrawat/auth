@@ -23,8 +23,8 @@ public class JwtUtil {
 
   public String generateToken(User user) {
     return Jwts.builder()
-      .subject(user.getUsername())
-      .claim("role", user.getRole())
+      .subject(user.username())
+      .claim("role", user.role())
       .issuedAt(new Date())
       .expiration(new Date(System.currentTimeMillis() + JWT_ACCESS_TOKEN_DURATION_MS))
       .signWith(getSigningKey())
@@ -32,7 +32,7 @@ public class JwtUtil {
   }
 
   public boolean validateToken(String token, User user) {
-    return extractUsername(token).equals(user.getUsername()) && !isTokenExpired(token);
+    return extractUsername(token).equals(user.username()) && !isTokenExpired(token);
   }
 
   public Claims extractClaims(String token) {

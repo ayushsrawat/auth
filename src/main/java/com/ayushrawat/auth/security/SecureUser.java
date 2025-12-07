@@ -16,7 +16,7 @@ public record SecureUser(User user) implements UserDetails {
   @Override
   public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> roles = new ArrayList<>();
-    for (UserRole role : UserRole.fromBitmask(user.getRole())) {
+    for (UserRole role : UserRole.fromBitmask(user.role())) {
       roles.add(new SimpleGrantedAuthority(role.name()));
     }
     return roles;
@@ -24,12 +24,12 @@ public record SecureUser(User user) implements UserDetails {
 
   @Override
   public String getPassword() {
-    return user.getPasswordHash();
+    return user.passwordHash();
   }
 
   @Override
   public @NonNull String getUsername() {
-    return user.getUsername();
+    return user.username();
   }
 
 }
