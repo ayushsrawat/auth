@@ -8,6 +8,7 @@ import com.ayushrawat.auth.payload.response.TokenRefreshResponse;
 import com.ayushrawat.auth.service.AuthService;
 import com.ayushrawat.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,13 +44,13 @@ public class AuthController {
   }
 
   @PostMapping("/refreshToken")
-  public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest tokenRefreshRequest) {
+  public ResponseEntity<@NonNull TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest tokenRefreshRequest) {
     TokenRefreshResponse response = authService.refreshToken(tokenRefreshRequest);
     return ResponseEntity.ok(response);
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<String> logoutUser() {
+  public ResponseEntity<@NonNull String> logoutUser() {
     authService.logoutUser();
     return ResponseEntity.ok("Logged out successfully");
   }

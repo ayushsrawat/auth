@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,12 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public void logoutUser() {
-    var principal = (SecureUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || authentication.getPrincipal() == null) {
+      logger.error("Unable to logout user.");
+      return;
+    }
+    var principal = (SecureUser) authentication.getPrincipal();
     User user = userRepository.findByUsername(principal.getUsername()).orElseThrow();
     int delta = refreshTokenService.deleteByUser(user);
     logger.info("logging [{}] out, deleting refresh tokens [{}] size", user.getUsername(), delta);
