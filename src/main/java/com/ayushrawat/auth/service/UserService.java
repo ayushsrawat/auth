@@ -1,10 +1,10 @@
 package com.ayushrawat.auth.service;
 
 import com.ayushrawat.auth.payload.request.UserDTO;
-import com.ayushrawat.auth.entity.User;
+import com.ayushrawat.auth.payload.response.RegisterUserResponse;
 
 public interface UserService {
 
-  User registerUser(UserDTO user);
+  RegisterUserResponse registerUser(UserDTO user);
 
 }

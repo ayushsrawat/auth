@@ -1,0 +1,58 @@
+server:
+  port: 8181
+
+spring:
+  application:
+    name: auth
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/auth
+    username: postgres
+    password: password
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: auth
+    password: password
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret:
+    # openssl rand -base64 32
+    key: Km0lNED77gSMUGBh6HVq4GvNTNE+umTkDncfr8n0I78=
+  access:
+    duration:
+      ms: 60000
+  refresh:
+    duration:
+      sec: 86400
+
+auth:
+  security:
+    allowed-origins: http://localhost:3000, http://localhost:5173, http://localhost
+  user:
+    rmq:
+      exchange: user_events_exchange
+      keys:
+        registered: user.registered
+
+# TODO:
+#[X] 1) refresh token
+#[ ] 2) update role & role based access control
+#[ ] 3) password policies for weak/medium/strong password
+#[-] 4) add salt to password
+#[ ] 5) 2fa
+#[X] 6) @ControllerAdvise
+#[X] 7) JWT_SECRET_KEY from the env
+#[ ] 8) view/update user information for admins
+#[ ] 9) password reset

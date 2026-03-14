@@ -35,10 +35,10 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public LoginResponse login(LoginRequest request) {
-    logger.info("Logging request from user [{}]", request.getUsername());
-    User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
-    if (passwordEncoder.matches(request.getPassword(), user.passwordHash())) {
-      logger.info("creating jwt token for user : {}", request.getUsername());
+    logger.info("Logging request from user [{}]", request.username());
+    User user = userRepository.findByUsername(request.username()).orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+    if (passwordEncoder.matches(request.password(), user.passwordHash())) {
+      logger.info("creating jwt token for user : {}", request.username());
       String accessToken = jwtUtil.generateToken(user);
       String refreshToken = refreshTokenService.createRefreshToken(user).token();
       return new LoginResponse(user.username(), accessToken, refreshToken);

@@ -5,6 +5,7 @@ import com.ayushrawat.auth.entity.UserRole;
 import com.ayushrawat.auth.mapper.UserMapper;
 import com.ayushrawat.auth.payload.event.UserRegisteredEvent;
 import com.ayushrawat.auth.payload.request.UserDTO;
+import com.ayushrawat.auth.payload.response.RegisterUserResponse;
 import com.ayushrawat.auth.repository.UserRepository;
 import com.ayushrawat.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
   private final RabbitTemplate rabbitTemplate;
 
-  public User registerUser(UserDTO userDTO) {
+  public RegisterUserResponse registerUser(UserDTO userDTO) {
     Assert.isTrue(userRepository.findByUsername(userDTO.getUsername()).isEmpty(), "Username already taken.");
     Assert.isTrue(userRepository.findByEmail(userDTO.getEmail()).isEmpty(), "Email already registered");
     try {
@@ -56,8 +57,9 @@ public class UserServiceImpl implements UserService {
       } catch (Exception ae) {
         logger.error("Error publishing user register event: routing key [{}] \n {} ", userRegisteredRegisterKey, ae.getMessage());
       }
-      return userWithId;
+      return new RegisterUserResponse(userWithId.username(),  "Registration Successful.");
     } catch (DataIntegrityViolationException e) {
+      logger.error("Error while registerUser for username {} : {}", userDTO.getUsername(), e.getMessage());
       throw new IllegalArgumentException("Error registering the user. Please ensure all the details are valid.");
     }
   }

@@ -1,7 +1,6 @@
 package com.ayushrawat.auth.security;
 
 import com.ayushrawat.auth.entity.User;
-import com.ayushrawat.auth.repository.UserRepository;
 import com.ayushrawat.auth.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -10,14 +9,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthProvider implements AuthenticationProvider {
 
-  private final UserRepository userRepository;
+  private final SecureUserDetailsService secureUserDetailsService;
   private final JwtUtil jwtUtil;
 
   @Override
@@ -28,12 +26,11 @@ public class JwtAuthProvider implements AuthenticationProvider {
       throw new BadCredentialsException("Invalid JWT token");
     }
 
-    User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    SecureUser secureUser = (SecureUser) secureUserDetailsService.loadUserByUsername(username);
+    User user = secureUser.user();
     if (!jwtUtil.validateToken(token, user)) {
       throw new BadCredentialsException("JWT token validation failed");
     }
-
-    SecureUser secureUser = new SecureUser(user);
     return new UsernamePasswordAuthenticationToken(
       secureUser,
       null,
