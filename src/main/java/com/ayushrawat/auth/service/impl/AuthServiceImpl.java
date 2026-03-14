@@ -7,6 +7,7 @@ import com.ayushrawat.auth.payload.request.TokenRefreshRequest;
 import com.ayushrawat.auth.payload.response.LoginResponse;
 import com.ayushrawat.auth.payload.response.TokenRefreshResponse;
 import com.ayushrawat.auth.repository.UserRepository;
+import com.ayushrawat.auth.security.BlacklistJwtBucket;
 import com.ayushrawat.auth.security.SecureUser;
 import com.ayushrawat.auth.service.AuthService;
 import com.ayushrawat.auth.service.RefreshTokenService;
@@ -32,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
   private final RefreshTokenService refreshTokenService;
   private final PasswordEncoder passwordEncoder;
   private final JwtUtil jwtUtil;
+  private final BlacklistJwtBucket blacklistJwtBucket;
 
   @Override
   public LoginResponse login(LoginRequest request) {
@@ -60,7 +62,15 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public void logoutUser() {
+  public void logoutUser(String authHeader) {
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      String token = authHeader.substring(7);
+      var claims = jwtUtil.extractClaims(token);
+      String jti = jwtUtil.extractJTI(claims);
+      long remainingTimeMillis = claims.getExpiration().getTime() - System.currentTimeMillis();
+      blacklistJwtBucket.add(jti, remainingTimeMillis);
+    }
+
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || authentication.getPrincipal() == null) {
       logger.error("Unable to logout user.");

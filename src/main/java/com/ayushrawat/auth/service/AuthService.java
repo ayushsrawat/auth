@@ -11,6 +11,6 @@ public interface AuthService {
 
   TokenRefreshResponse refreshToken(TokenRefreshRequest tokenRefreshRequest);
 
-  void logoutUser();
+  void logoutUser(String authHeader);
 
 }

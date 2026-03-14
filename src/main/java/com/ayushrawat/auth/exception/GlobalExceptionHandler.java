@@ -1,6 +1,7 @@
 package com.ayushrawat.auth.exception;
 
 import com.ayushrawat.auth.payload.response.ErrorResponse;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -16,6 +18,18 @@ import java.time.LocalDateTime;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler({JwtException.class, AuthenticationException.class})
+  public ResponseEntity<@NonNull ErrorResponse> handleJwtException(Exception e, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        LocalDateTime.now(),
+        HttpStatus.UNAUTHORIZED.value(),
+        "Request Unauthorized",
+        e.getMessage(),
+        request.getRequestURI()
+    );
+    return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+  }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<@NonNull ErrorResponse> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {

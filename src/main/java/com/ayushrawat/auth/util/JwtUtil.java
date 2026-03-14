@@ -10,23 +10,26 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
   @Value("${jwt.secret.key}")
-  private String JWT_SECRET_KEY;
+  private String jwtSecretKey;
 
   @Value("${jwt.access.duration.ms}")
-  private Long JWT_ACCESS_TOKEN_DURATION_MS;
+  private Long jwtAccessTokenDurationMs;
 
   public String generateToken(User user) {
+    String jti = UUID.randomUUID().toString();
     return Jwts.builder()
       .subject(user.username())
+      .id(jti)
       .claim("role", user.role())
       .issuedAt(new Date())
-      .expiration(new Date(System.currentTimeMillis() + JWT_ACCESS_TOKEN_DURATION_MS))
+      .expiration(new Date(System.currentTimeMillis() + jwtAccessTokenDurationMs))
       .signWith(getSigningKey())
       .compact();
   }
@@ -44,7 +47,19 @@ public class JwtUtil {
   }
 
   public String extractUsername(String token) {
-    return extractClaims(token).getSubject();
+    return extractUsername(extractClaims(token));
+  }
+
+  public String extractUsername(Claims claims) {
+    return claims.getSubject();
+  }
+
+  public String extractJTI(String token) {
+    return extractJTI(extractClaims(token));
+  }
+
+  public String extractJTI(Claims claims) {
+    return claims.getId();
   }
 
   private Boolean isTokenExpired(String token) {
@@ -67,7 +82,7 @@ public class JwtUtil {
   }
 
   private SecretKey getSigningKey() {
-    byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET_KEY);
+    byte[] keyBytes = Decoders.BASE64.decode(jwtSecretKey);
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
